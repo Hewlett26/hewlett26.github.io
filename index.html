@@ -3,446 +3,1282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Himank Khiani - Developer, Builder, Creator. Portfolio showcasing projects and experience.">
-    <title>Himank Khiani | Developer Portfolio</title>
-    
-    <!-- Google Fonts -->
+    <title>HIMANK KHIANI — BROADCAST SIGNAL</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #0a0a0a;
+            --dark-gray: #1a1a1a;
+            --medium-gray: #666;
+            --light-gray: #999;
+            --white: #ffffff;
+            --glow: #fff;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: transform 0.08s;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.02;
+            animation: drift 12s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes drift {
+            0%, 100% {
+                transform: translateX(0px);
+            }
+            50% {
+                transform: translateX(1px);
+            }
+        }
+
+        /* CRT Screen Container */
+        .crt-screen {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Scanlines Effect */
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.25),
+                rgba(0, 0, 0, 0.25) 1px,
+                transparent 1px,
+                transparent 2.5px
+            );
+            pointer-events: none;
+            animation: flicker 4s infinite, scanlineShift 8s linear infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.96; }
+            50% { opacity: 0.98; }
+            100% { opacity: 0.97; }
+        }
+
+        @keyframes scanlineShift {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(2.5px); }
+        }
+
+        /* Film Grain */
+        .grain {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+            animation: grainMove 0.5s steps(4) infinite;
+        }
+
+        @keyframes grainMove {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-2%, 2%); }
+        }
+
+        .grain {
+            animation: grainMove 8s steps(2) infinite;
+        }
+
+        /* Vignette */
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.7) 100%);
+            pointer-events: none;
+        }
+
+        /* Screen Bloom - phosphor glow trapped in glass */
+        .vignette::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(212, 212, 212, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+            animation: bloomPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes bloomPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Screen Curvature */
+        .screen-curve {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+        }
+
+        /* Analog Haze */
+        .screen-curve::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(17, 17, 17, 0.15);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        /* Tracking Line */
+        .tracking-line {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.06);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            animation: tracking 18s linear infinite;
+        }
+
+        @keyframes tracking {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+            8% {
+                opacity: 0.4;
+            }
+            10% {
+                opacity: 0;
+            }
+            100% {
+                top: 120%;
+                opacity: 0;
+            }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--black);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-screen.shutdown {
+            animation: crtShutdown 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes crtShutdown {
+            0% { 
+                opacity: 1;
+                transform: scaleY(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scaleY(0.02);
+            }
+            70% {
+                opacity: 0.8;
+                transform: scaleY(0.005);
+                filter: brightness(2);
+            }
+            100% { 
+                opacity: 0;
+                transform: scaleY(0);
+                pointer-events: none;
+            }
+        }
+
+        .vhs-play {
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: var(--white);
+            text-shadow: 0 0 4px rgba(212, 212, 212, 0.2);
+            animation: playBlink 0.5s 0.3s;
+        }
+
+        @keyframes playBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .glitch-line {
+            width: 100%;
+            height: 3px;
+            background: var(--white);
+            position: absolute;
+            top: 40%;
+            animation: glitchSlide 0.4s 0.8s;
+        }
+
+        @keyframes glitchSlide {
+            0% { transform: translateX(-100%); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+
+        .static-noise {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='5' numOctaves='8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+            opacity: 0;
+            animation: staticPulse 0.3s 1.2s;
+        }
+
+        @keyframes staticPulse {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .boot-text {
+            font-family: 'VT323', monospace;
+            font-size: 28px;
+            text-align: center;
+            line-height: 1.8;
+            opacity: 0;
+            animation: bootSequence 1s 1.6s forwards;
+        }
+
+        @keyframes bootSequence {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 110px 50px;
+            position: relative;
+            z-index: 1;
+            transform-style: preserve-3d;
+        }
+
+        /* CRT Bulge Effect */
+        .crt-bulge {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            transform: perspective(1000px) translateZ(0);
+            transform-origin: center center;
+        }
+
+        .crt-bulge::before {
+            content: "";
+            position: absolute;
+            inset: -2%;
+            background: transparent;
+            border-radius: 3% / 4%;
+            transform: scale(1.02) translateZ(20px);
+            transform-origin: center;
+        }
+
+        /* Apply subtle barrel distortion to content */
+        #content-wrapper {
+            position: relative;
+            transform: scale(0.995);
+            transform-origin: center;
+            border-radius: 2px;
+        }
+
+        /* VHS Overlay */
+        .vhs-overlay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            color: var(--white);
+            z-index: 100;
+            opacity: 0.65;
+            animation: overlayDrift 9s infinite ease-in-out;
+        }
+
+        @keyframes overlayDrift {
+            0%, 100% {
+                transform: translateX(0px);
+            }
+            50% {
+                transform: translateX(0.5px);
+            }
+        }
+
+        .rec-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: var(--white);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: recBlink 1.5s infinite;
+        }
+
+        @keyframes recBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .timestamp {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            color: var(--light-gray);
+            z-index: 100;
+        }
+
+        /* Channel Selector */
+        .channel-selector {
+            position: fixed;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .channel-btn {
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border: 2px solid var(--medium-gray);
+            color: var(--light-gray);
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .channel-btn:hover {
+            border-color: var(--white);
+            color: var(--white);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
+        }
+
+        .channel-btn.active {
+            background: var(--white);
+            color: var(--black);
+            border-color: var(--white);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
+        }
+
+        /* Channel Sections */
+        .channel {
+            display: none;
+            min-height: 100vh;
+            animation: channelFadeIn 0.8s;
+        }
+
+        .channel.active {
+            display: block;
+        }
+
+        @keyframes channelFadeIn {
+            0% { opacity: 0; transform: scale(0.98); }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .channel {
+            animation: channelFadeIn 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .channel-header {
+            font-family: 'VT323', monospace;
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .channel-title {
+            font-family: 'VT323', monospace;
+            font-size: 48px;
+            margin-bottom: 70px;
+            line-height: 1.2;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        /* Channel 01 - Broadcast */
+        .broadcast-content {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            max-width: 800px;
+        }
+
+        .glitch-text {
+            font-size: 15px;
+            line-height: 2;
+            color: var(--light-gray);
+            font-weight: 300;
+        }
+
+        .signal-bars {
+            display: flex;
+            gap: 4px;
+            margin: 30px 0;
+        }
+
+        .signal-bar {
+            width: 40px;
+            background: var(--medium-gray);
+            animation: signalPulse 1.5s infinite;
+        }
+
+        .signal-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
+        .signal-bar:nth-child(2) { height: 40px; animation-delay: 0.1s; }
+        .signal-bar:nth-child(3) { height: 60px; animation-delay: 0.2s; }
+        .signal-bar:nth-child(4) { height: 50px; animation-delay: 0.3s; }
+        .signal-bar:nth-child(5) { height: 30px; animation-delay: 0.4s; }
+
+        @keyframes signalPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Channel 02 - Archives */
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .archive-item {
+            border: 1px solid var(--medium-gray);
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s;
+        }
+
+        .archive-item:hover {
+            border-color: var(--white);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .archive-item:nth-child(2) {
+            margin-top: 18px;
+        }
+
+        .archive-item:nth-child(4) {
+            margin-top: -8px;
+        }
+
+        .archive-label {
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            color: var(--medium-gray);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .archive-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--white);
+        }
+
+        .archive-description {
+            font-size: 14px;
+            color: var(--light-gray);
+            line-height: 1.6;
+        }
+
+        /* Channel 03 - Experiments */
+        .tape-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .tape-item {
+            border: 2px solid var(--medium-gray);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            font-family: 'VT323', monospace;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .tape-item:hover {
+            border-color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+        }
+
+        .tape-header {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .tape-meta {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: var(--light-gray);
+        }
+
+        .tape-description {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            color: var(--light-gray);
+            line-height: 1.6;
+        }
+
+        /* Channel 04 - Logs */
+        .log-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 40px;
+            max-width: 600px;
+        }
+
+        .log-entry {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--dark-gray);
+        }
+
+        .log-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--white);
+            flex-shrink: 0;
+        }
+
+        .log-skill {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            color: var(--white);
+            flex: 1;
+            letter-spacing: 1px;
+        }
+
+        .log-level {
+            font-size: 14px;
+            color: var(--medium-gray);
+        }
+
+        /* Channel 05 - Transmission */
+        .transmission-content {
+            max-width: 600px;
+        }
+
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .contact-item {
+            border: 1px solid var(--medium-gray);
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .contact-item:hover {
+            border-color: var(--white);
+            background: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+        }
+
+        .contact-label {
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .contact-arrow {
+            font-size: 24px;
+            color: var(--medium-gray);
+        }
+
+        /* Static Transition Overlay */
+        .static-transition {
+            position: fixed;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='5' numOctaves='8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .static-transition.active {
+            animation: staticFlash 0.3s;
+        }
+
+        @keyframes staticFlash {
+            0% {
+                opacity: 0;
+                transform: scaleY(1);
+            }
+            20% {
+                opacity: 0.7;
+                transform: scaleY(1.03) skewX(2deg);
+            }
+            40% {
+                opacity: 0.2;
+                transform: translateX(-2px);
+            }
+            60% {
+                opacity: 0.6;
+                transform: translateX(2px);
+            }
+            100% {
+                opacity: 0;
+                transform: scaleY(1);
+            }
+        }
+
+        /* No Signal Easter Egg */
+        .no-signal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .no-signal-text {
+            font-family: 'VT323', monospace;
+            font-size: 72px;
+            color: var(--white);
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.12);
+            animation: signalBlink 2s infinite;
+            letter-spacing: 12px;
+            opacity: 0.75;
+            filter: blur(0.4px);
+        }
+
+        @keyframes signalBlink {
+            0%, 49%, 51%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 80px 25px;
+            }
+
+            .channel-title {
+                font-size: 40px;
+                margin-bottom: 50px;
+            }
+
+            .channel-selector {
+                right: 15px;
+                gap: 10px;
+            }
+
+            .channel-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .vhs-overlay {
+                font-size: 16px;
+                top: 15px;
+                left: 15px;
+            }
+
+            .timestamp {
+                font-size: 14px;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .archive-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tape-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .no-signal-text {
+                font-size: 48px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="cursor-circle"></div>
-    <div class="cursor-orbit"></div>
+    <!-- Audio Elements -->
+    <audio id="staticSound" loop>
+        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
+    </audio>
+    <audio id="channelSwitchSound">
+        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
+    </audio>
+    <audio id="startupSound">
+        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
+    </audio>
 
-    <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="container nav-container">
-            <a href="#hero" class="logo">HK</a>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="#hero" class="nav-link active">Home</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
-                <li><a href="#skills" class="nav-link">Skills</a></li>
-                <li><a href="#projects" class="nav-link">Projects</a></li>
-                <li><a href="#journey" class="nav-link">Journey</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-            </ul>
-            <button class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="vhs-play">▶ PLAY</div>
+        <div class="glitch-line"></div>
+        <div class="static-noise"></div>
+        <div class="boot-text">
+            INITIALIZING BROADCAST…<br>
+            SIGNAL FOUND
         </div>
-    </nav>
+    </div>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero">
-        <div class="hero-background"></div>
-        <div class="container hero-container">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    <span class="hero-greeting">Hello, I'm</span>
-                    <span class="hero-name">Himank Khiani</span>
-                </h1>
-                <p class="hero-subtitle">Developer / Builder / Creator</p>
-                <p class="hero-description">
-                    Exploring programming, design, systems, and digital experiences through projects, experiments, and curiosity.
+    <!-- CRT Screen Effects -->
+    <div class="crt-screen">
+        <div class="scanlines"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="screen-curve"></div>
+        <div class="tracking-line"></div>
+    </div>
+
+    <!-- VHS Overlay -->
+    <div class="vhs-overlay">
+        <span class="rec-indicator"></span>
+        <span id="current-channel">CH 01</span>
+    </div>
+
+    <!-- Timestamp -->
+    <div class="timestamp" id="timestamp"></div>
+
+    <!-- Static Transition -->
+    <div class="static-transition" id="staticTransition"></div>
+
+    <!-- CRT Bulge Wrapper -->
+    <div class="crt-bulge"></div>
+
+    <!-- Channel Selector -->
+    <div class="channel-selector">
+        <button class="channel-btn active" data-channel="01">01</button>
+        <button class="channel-btn" data-channel="02">02</button>
+        <button class="channel-btn" data-channel="03">03</button>
+        <button class="channel-btn" data-channel="04">04</button>
+        <button class="channel-btn" data-channel="05">05</button>
+        <button class="channel-btn" data-channel="00">00</button>
+    </div>
+
+    <!-- Main Container -->
+    <div id="content-wrapper">
+    <div class="container">
+        <!-- Channel 01 - Broadcast -->
+        <section class="channel active" id="channel-01">
+            <div class="channel-header">CH 01 — BROADCAST</div>
+            <h1 class="channel-title">HIMANK KHIANI</h1>
+            <div class="broadcast-content">
+                <p class="glitch-text">
+                    STATUS: ONLINE<br>
+                    LOCATION: NASHIK<br>
+                    UPTIME: 13 YEARS
                 </p>
-                <div class="hero-cta">
-                    <a href="#projects" class="btn btn-primary">View Projects</a>
-                    <a href="#contact" class="btn btn-secondary">Contact Me</a>
-                </div>
-            </div>
-            <div class="hero-decoration">
-                <div class="floating-card card-1">
-                    <div class="code-card">
-                        <pre><code><span class="kw">def</span> <span class="fn">solve</span>(problem):
-    <span class="kw">return</span> <span class="fn">build</span>(<span class="fn">cleanly</span>)</code></pre>
-                    </div>
-                </div>
-                <div class="floating-card card-2">
-                    <div class="code-card">
-                        <pre><code><span class="fn">sudo</span> magnet install <span class="str">discipline</span></code></pre>
-                    </div>
-                </div>
-                <div class="floating-card card-3">
-                    <div class="code-card">
-                        <pre><code>player.speed = <span class="str">ambition</span></code></pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <span>Scroll</span>
-            <div class="scroll-line"></div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">About Me</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="about-content">
-                <div class="about-text">
-                    <p class="about-paragraph">
-                        I’m a student and developer who enjoys building things across programming, design, and the web. Most of my projects start with curiosity — whether it’s experimenting with frontend design, exploring Linux, or creating websites with stronger personality and atmosphere.
-                    </p>
-                    <p class="about-paragraph">
-                        Lately, I’ve been focused on improving my frontend skills by building responsive static websites and studying modern web design, layout systems, and digital aesthetics. I enjoy learning by making projects, breaking things, rebuilding them, and figuring out how they work underneath.
-
-I care a lot about clean design, thoughtful interactions, and creating experiences that feel intentional rather than generic.
-                    </p>
-                    <div class="about-highlights">
-                        <div class="highlight-item">
-                            <span class="highlight-number">5</span>
-                            <span class="highlight-label">Projects Completed</span>
-                        </div>
-                        <div class="highlight-item">
-                            <span class="highlight-number">2</span>
-                            <span class="highlight-label">Years Experience in Coding</span>
-                        </div>
-                        <div class="highlight-item">
-                            <span class="highlight-number">Infinite</span>
-                            <span class="highlight-label">Curiousity</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Skills Section -->
-    <section id="skills" class="skills">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Skills & Expertise</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="skills-grid">
-                <!-- Skill Card 1 -->
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
-                    </div>
-                    <h3 class="skill-title">Web Development</h3>
-                    <p class="skill-description">
-                        Building responsive, modern web applications with cutting-edge technologies 
-                        and best practices.
-                    </p>
-                    <div class="skill-tags">
-                        <span class="tag">HTML5</span>
-                        <span class="tag">CSS3</span>
-                        <span class="tag">JavaScript</span>
-                    </div>
-                </div>
-
-                <!-- Skill Card 3 -->
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="skill-title">Python</h3>
-                    <p class="skill-description">
-                        Developing automation tools, data analysis scripts, and backend services 
-                        with Python.
-                    </p>
-                    <div class="skill-tags">
-                        <span class="tag">Django</span>
-                        <span class="tag">Flask</span>
-                        <span class="tag">Pandas</span>
-                    </div>
-                </div>
-
-                <!-- Skill Card 4 -->
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
-                        </svg>
-                    </div>
-                    <h3 class="skill-title">Linux</h3>
-                    <p class="skill-description">
-                        System administration, shell scripting, and deployment on Linux environments.
-                    </p>
-                    <div class="skill-tags">
-                        <span class="tag">Ubuntu</span>
-                        <span class="tag">Bash</span>
-                        <span class="tag">Docker</span>
-                    </div>
-                </div>
-
-                <!-- Skill Card 5 -->
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                    </div>
-                    <h3 class="skill-title">Problem Solving</h3>
-                    <p class="skill-description">
-                        Analytical thinking and creative solutions to complex technical challenges.
-                    </p>
-                    <div class="skill-tags">
-                        <span class="tag">Algorithms</span>
-                        <span class="tag">Data Structures</span>
-                        <span class="tag">Optimization</span>
-                    </div>
-                </div>
-
-                </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Featured Projects</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="projects-grid">
-                <!-- Project Card 1: Magnet -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <div class="project-overlay"></div>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">Magnet</h3>
-                        <p class="project-description">
-                            Package management helper using Distrobox with Podman to containerize Debian and Fedora, increasing app availability on Arch Linux.
-                        </p>
-                        <div class="project-tech">
-                            <span class="tech-badge">Bash</span>
-                            <span class="tech-badge">Distrobox</span>
-                            <span class="tech-badge">Podman</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/hewlett26/magnet" class="project-link" target="_blank" rel="noopener">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                                </svg>
-                                GitHub
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project Card 2: Brew Haven -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <div class="project-overlay"></div>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">Brew Haven</h3>
-                        <p class="project-description">
-                            A mock brewery website showcasing craft beers with an elegant design and interactive elements.
-                        </p>
-                        <div class="project-tech">
-                            <span class="tech-badge">HTML</span>
-                            <span class="tech-badge">CSS</span>
-                            <span class="tech-badge">JavaScript</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://hewlett26.github.io/brewhaven.github.io/" class="project-link" target="_blank" rel="noopener">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15 3 21 3 21 9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                                Live Demo
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project Card 3: Iron Vale -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <div class="project-overlay"></div>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">Iron Vale</h3>
-                        <p class="project-description">
-                            A mock gym website specializing in martial arts like Muay Thai, Brazilian Jiu-Jitsu.
-                        </p>
-                        <div class="project-tech">
-                            <span class="tech-badge">HTML</span>
-                            <span class="tech-badge">CSS</span>
-                            <span class="tech-badge">JavaScript</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://hewlett26.github.io/ironvale.github.io/" class="project-link" target="_blank" rel="noopener">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15 3 21 3 21 9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                                Live Demo
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Journey Section -->
-    <section id="journey" class="journey">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">My Journey</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="timeline">
-                <!-- Timeline Item 1 -->
-                <div class="timeline-item">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">2026 - Present</span>
-                        <h3 class="timeline-title">Building Small Projects and Learning</h3>
-                        <p class="timeline-description">
-                            Focused on frontend development, responsive design, and creating more polished web experiences through personal projects and experimentation.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Timeline Item 2 -->
-                <div class="timeline-item">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date"> Late 2025</span>
-                        <h3 class="timeline-title">Completing several courses</h3>
-                        <p class="timeline-description">
-                            Discovered CS50 and it's several offered courses and set off to complete them and learn new skills along the way.                    
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Timeline Item 3 -->
-                <div class="timeline-item">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date"> Mid 2025</span>
-                        <h3 class="timeline-title">Learning New Languages and experimenting</h3>
-                        <p class="timeline-description">
-                            Learning languages like SQL, C and exploring Python libraries for data cleaning and visualisation.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Timeline Item 4 -->
-                <div class="timeline-item">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <span class="timeline-date">Early 2025</span>
-                        <h3 class="timeline-title">Linux</h3>
-                        <p class="timeline-description">
-                            Started using Linux on a very old machine and starting to tinker around with it to make it more efficient and make the machine usable.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Get In Touch</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <h3 class="contact-subtitle">Let's Work Together</h3>
-                    <p class="contact-description">
-                        I'm always interested in hearing about new projects and opportunities. 
-                        Whether you have a question or just want to say hi, feel free to reach out!
-                    </p>
-                    <div class="contact-details">
-                        <a href="mailto:hewlet26nothing@gmail.com" class="contact-item">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                            <span>hello@himankkhiani.com</span>
-                        </a>
-                        <a href="https://github.com/hewlett26" class="contact-item" target="_blank" rel="noopener">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                            </svg>
-                            <span>github.com/hewlett26</span>
-                        </a>
-                        
-                    </div>
-                </div>
-                <form class="contact-form" id="contactForm">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <p class="footer-text">
-                    &copy; 2026 Himank Khiani. All rights reserved.
+                <p class="glitch-text">
+                    Hello, world. My name is Himank Khiani<br>
+                    but you can call me Hewlett. I love to tinker<br>
+                    around with stuff and build all sorts of<br>
+                    websites, apps and stuff like that.<br>
                 </p>
-                <div class="footer-social">
-                    <a href="https://github.com/yourusername" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                        </svg>
+                <div class="signal-bars">
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                </div>
+                <p class="glitch-text">
+                    Signal Strength: STABLE
+                </p>
+            </div>
+        </section>
+
+        <!-- Channel 02 - Archives -->
+        <section class="channel" id="channel-02">
+            <div class="channel-header">CH 02 — ARCHIVES</div>
+            <h1 class="channel-title">ABOUT</h1>
+            <div class="archive-grid">
+                <div class="archive-item">
+                    <div class="archive-label">FILE_001</div>
+                    <div class="archive-title">Origin</div>
+                    <div class="archive-description">
+                        Started coding just a year ago because of Linux. Every project I make tends to solve a problem and be (we need this) aesthetically unique and pleasant.
+                    </div>
+                </div>
+                <div class="archive-item">
+                    <div class="archive-label">FILE_002</div>
+                    <div class="archive-title">Philosophy</div>
+                    <div class="archive-description">
+                        I believe that anyone can code if they can translate their ideas to a programming language. Websites like these can be built by anyone as long as they have the goals straight.
+                    </div>
+                </div>
+                <div class="archive-item">
+                    <div class="archive-label">FILE_003</div>
+                    <div class="archive-title">Approach</div>
+                    <div class="archive-description">
+                        Learn just not by watching, but also by building. Make projects that may serve as inspiration for others to look upon and learn.
+                    </div>
+                </div>
+                <div class="archive-item">
+                    <div class="archive-label">FILE_004</div>
+                    <div class="archive-title">Vision</div>
+                    <div class="archive-description">
+                        Creating tools that make stuff more easier. Building websites which aren't generic. Reviving niches that were better than present date's mainstream choices.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Channel 03 - Experiments -->
+        <section class="channel" id="channel-03">
+            <div class="channel-header">CH 03 — EXPERIMENTS</div>
+            <h1 class="channel-title">PROJECTS</h1>
+            <div class="tape-list">
+                <div class="tape-item">
+                    <div class="tape-header">[TAPE_01] MAGNET</div>
+                    <div class="tape-meta">
+                        <span>STATUS: STABLE</span>
+                        <span>YEAR: 2025</span>
+                    </div>
+                    <div class="tape-description">
+                        A package management wrapper built in Bash which uses distrobox to containerize 2 distros in order to enchance app support.
+                    </div>
+                </div>
+                <div class="tape-item">
+                    <div class="tape-header">[TAPE_02] BREW HAVEN</div>
+                    <div class="tape-meta">
+                        <span>STATUS: EXPERIMENTAL</span>
+                        <span>YEAR: 2026</span>
+                    </div>
+                    <div class="tape-description">
+                        Brew Haven is a mock website for a cafe built using only HTML/CSS/Javascript tech stack. It is a great example of how you can make aesthetically pleasing websites while keeping the backend simple.
+                    </div>
+                </div>
+                <div class="tape-item">
+                    <div class="tape-header">[TAPE_03] IRON VALE</div>
+                    <div class="tape-meta">
+                        <span>STATUS: EXPERIMENTAL</span>
+                        <span>YEAR: 2026</span>
+                    </div>
+                    <div class="tape-description">
+                        Iron Vale is yet another mock website built for a Gym which teaches Boxing, Jiu-Jitsu and other self-defense and martial arts sports. It is a perfect example of what a simple website can look like.
+                    </div>
+                </div>
+                <div class="tape-item">
+                    <div class="tape-header">[TAPE_04] RETRO TERMINAL</div>
+                    <div class="tape-meta">
+                        <span>STATUS: ONGOING</span>
+                        <span>YEAR: 2026</span>
+                    </div>
+                    <div class="tape-description">
+                        Browser-based terminal emulator with vintage CRT aesthetics. 
+                        Custom shell commands, file system, and nostalgic computing experience. 
+                        Built entirely in vanilla JavaScript.
+                    </div>
+                </div>
+                <div class="tape-item">
+                    <div class="tape-header">[TAPE_05] SIGNAL PROCESSOR</div>
+                    <div class="tape-meta">
+                        <span>STATUS: BETA</span>
+                        <span>YEAR: 2026</span>
+                    </div>
+                    <div class="tape-description">
+                        Real-time audio manipulation tool with VHS-inspired visual feedback. 
+                        Combines Web Audio API with canvas rendering to create analog-style 
+                        effects in a digital medium.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Channel 04 - Logs -->
+        <section class="channel" id="channel-04">
+            <div class="channel-header">CH 04 — LOGS</div>
+            <h1 class="channel-title">SKILLS</h1>
+            <div class="log-entries">
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">PYTHON</div>
+                    <div class="log-level">INTERMEDIATE</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">JAVASCRIPT</div>
+                    <div class="log-level">ADVANCED</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">HTML / CSS</div>
+                    <div class="log-level">ADVANCED</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">REACT</div>
+                    <div class="log-level">INTERMEDIATE</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">NODE.JS</div>
+                    <div class="log-level">INTERMEDIATE</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">GIT</div>
+                    <div class="log-level">LEARNING</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">SQL</div>
+                    <div class="log-level">ADVANCED</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">C++</div>
+                    <div class="log-level">EXPLORING</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">MACHINE LEARNING</div>
+                    <div class="log-level">LEARNING</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-indicator"></div>
+                    <div class="log-skill">WEBGL</div>
+                    <div class="log-level">EXPLORING</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Channel 05 - Transmission -->
+        <section class="channel" id="channel-05">
+            <div class="channel-header">CH 05 — TRANSMISSION</div>
+            <h1 class="channel-title">CONTACT</h1>
+            <div class="transmission-content">
+                <p class="glitch-text">
+                    Signal transmission channels available below. Select preferred method 
+                    for establishing connection. Response time typically within 24-48 hours.
+                </p>
+                <div class="contact-methods">
+                    <a href="mailto:hewlet26nothing@gmail.com" class="contact-item">
+                        <span class="contact-label">EMAIL</span>
+                        <span class="contact-arrow">→</span>
                     </a>
+                    <a href="https://github.com/hewlett26" target="_blank" class="contact-item">
+                        <span class="contact-label">GITHUB</span>
+                        <span class="contact-arrow">→</span>
+                    </a>
+                    <a href="https://linkedin.com/in/hewlett" target="_blank" class="contact-item">
+                        <span class="contact-label">LINKEDIN</span>
+                        <span class="contact-arrow">→</span>
+                    </a>
+                    <a href="https://twitter.com/hewlett" target="_blank" class="contact-item">
+                        <span class="contact-label">TWITTER</span>
+                        <span class="contact-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Channel 00 - No Signal (Easter Egg) -->
+        <section class="channel" id="channel-00">
+            <div class="no-signal">
+                <div class="no-signal-text">NO SIGNAL</div>
+            </div>
+        </section>
+    </div>
+    </div>
+
+    <script>
+        // Audio System - Low volume authentic CRT sounds
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // CRT Power-on sound
+        function playCRTPowerOn() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(120, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(80, audioContext.currentTime + 0.3);
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.02, audioContext.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.6);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.6);
+        }
+
+        // Channel switch static burst
+        function playChannelStatic() {
+            const bufferSize = audioContext.sampleRate * 0.08;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+            }
+            
+            const source = audioContext.createBufferSource();
+            const gainNode = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+            
+            filter.type = 'bandpass';
+            filter.frequency.value = 2000;
+            filter.Q.value = 1;
+            
+            source.buffer = buffer;
+            source.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            gainNode.gain.value = 0.025;
+            
+            source.start();
+            
+            // Boost background static temporarily during channel switch
+            if (staticGain) {
+                const currentTime = audioContext.currentTime;
+                staticGain.gain.setValueAtTime(staticGain.gain.value, currentTime);
+                staticGain.gain.linearRampToValueAtTime(0.08, currentTime + 0.05);
+                staticGain.gain.linearRampToValueAtTime(0.015, currentTime + 0.3);
+            }
+        }
+
+        // Mechanical button click
+        function playButtonClick() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.01, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.03);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.03);
+        }
+
+        // Faint CRT hum (very subtle background)
+        let hum = null;
+        let staticNoise = null;
+        let staticGain = null;
+        
+        function startCRTHum() {
+            hum = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            hum.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            hum.frequency.value = 60;
+            hum.type = 'sine';
+            gainNode.gain.value = 0.003;
+            
+            hum.start();
+        }
+
+        // Continuous static noise
+        function startContinuousStatic() {
+            const bufferSize = audioContext.sampleRate * 2;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            // Generate white noise
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.08;
+            }
+            
+            staticNoise = audioContext.createBufferSource();
+            staticNoise.buffer = buffer;
+            staticNoise.loop = true;
+            
+            staticGain = audioContext.createGain();
+            staticGain.gain.value = 0.015; // Very subtle
+            
+            // Low-pass filter for authentic TV static
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 4000;
+            filter.Q.value = 0.7;
+            
+            staticNoise.connect(filter);
+            filter.connect(staticGain);
+            staticGain.connect(audioContext.destination);
+            
+            staticNoise.start(0);
+        }
+
+        // Timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('timestamp').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        updateTimestamp();
+        setInterval(updateTimestamp, 1000);
+
+        // Channel Switching
+        const channelButtons = document.querySelectorAll('.channel-btn');
+        const channels = document.querySelectorAll('.channel');
+        const staticTransition = document.getElementById('staticTransition');
+        const currentChannelDisplay = document.getElementById('current-channel');
+
+        channelButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const channelNum = button.dataset.channel;
+                
+                // Play sounds
+                playButtonClick();
+                
+                setTimeout(() => {
+                    playChannelStatic();
+                }, 50);
+                
+                // Show static transition
+                staticTransition.classList.add('active');
+                
+                setTimeout(() => {
+                    // Switch active button
+                    channelButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
                     
-                    <a href="mailto:hello@himankkhiani.com" class="social-link" aria-label="Email">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
+                    // Switch active channel
+                    channels.forEach(channel => channel.classList.remove('active'));
+                    document.getElementById(`channel-${channelNum}`).classList.add('active');
+                    
+                    // Update channel display
+                    currentChannelDisplay.textContent = `CH ${channelNum}`;
+                    
+                    // Remove static
+                    staticTransition.classList.remove('active');
+                }, 200);
+            });
+        });
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+        // Random static flicker effect - very subtle
+        function randomFlicker() {
+            if (Math.random() > 0.98) {
+                staticTransition.classList.add('active');
+                setTimeout(() => {
+                    staticTransition.classList.remove('active');
+                }, 40);
+            }
+        }
+        setInterval(randomFlicker, 12000);
+
+        // Weak signal events - very subtle body shift
+        function weakSignalEvent() {
+            if (Math.random() > 0.99) {
+                document.body.style.transform = 'translateX(0.5px)';
+                setTimeout(() => {
+                    document.body.style.transform = 'translateX(0px)';
+                }, 60);
+            }
+        }
+        setInterval(weakSignalEvent, 6000);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '5') {
+                const channelNum = e.key.padStart(2, '0');
+                const button = document.querySelector(`[data-channel="${channelNum}"]`);
+                if (button) button.click();
+            }
+        });
+
+        // Remove loading screen with CRT shutdown effect
+        setTimeout(() => {
+            const loadingScreen = document.querySelector('.loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('shutdown');
+                
+                // Play power-on sound
+                setTimeout(() => {
+                    playCRTPowerOn();
+                    // Start subtle CRT hum
+                    setTimeout(() => {
+                        startCRTHum();
+                        // Start continuous static
+                        setTimeout(() => {
+                            startContinuousStatic();
+                        }, 200);
+                    }, 400);
+                }, 500);
+                
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 1300);
+            }
+        }, 3000);
+    </script>
 </body>
 </html>
