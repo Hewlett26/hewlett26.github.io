@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HIMANK KHIANI — BROADCAST SIGNAL</title>
+    <title>Himank Khiani Broadcast Signal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -12,6 +12,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         :root {
@@ -19,7 +23,7 @@
             --dark-gray: #1a1a1a;
             --medium-gray: #666;
             --light-gray: #999;
-            --white: #ffffff;
+            --white: #e8e8e8;
             --glow: #fff;
         }
 
@@ -29,26 +33,6 @@
             color: var(--white);
             overflow-x: hidden;
             line-height: 1.6;
-            transition: transform 0.08s;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0.02;
-            animation: drift 12s ease-in-out infinite;
-            z-index: 0;
-        }
-
-        @keyframes drift {
-            0%, 100% {
-                transform: translateX(0px);
-            }
-            50% {
-                transform: translateX(1px);
-            }
         }
 
         /* CRT Screen Container */
@@ -65,24 +49,19 @@
             inset: 0;
             background: repeating-linear-gradient(
                 0deg,
-                rgba(0, 0, 0, 0.25),
-                rgba(0, 0, 0, 0.25) 1px,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
                 transparent 1px,
-                transparent 2.5px
+                transparent 2px
             );
             pointer-events: none;
-            animation: flicker 4s infinite, scanlineShift 8s linear infinite;
+            animation: flicker 0.15s infinite;
         }
 
         @keyframes flicker {
-            0% { opacity: 0.96; }
+            0% { opacity: 0.95; }
             50% { opacity: 0.98; }
-            100% { opacity: 0.97; }
-        }
-
-        @keyframes scanlineShift {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(2.5px); }
+            100% { opacity: 0.96; }
         }
 
         /* Film Grain */
@@ -97,34 +76,17 @@
 
         @keyframes grainMove {
             0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-2%, 2%); }
-        }
-
-        .grain {
-            animation: grainMove 8s steps(2) infinite;
+            25% { transform: translate(-2%, 2%); }
+            50% { transform: translate(2%, -2%); }
+            75% { transform: translate(-2%, -2%); }
         }
 
         /* Vignette */
         .vignette {
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.7) 100%);
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
             pointer-events: none;
-        }
-
-        /* Screen Bloom - phosphor glow trapped in glass */
-        .vignette::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at center, rgba(212, 212, 212, 0.03) 0%, transparent 60%);
-            pointer-events: none;
-            animation: bloomPulse 6s ease-in-out infinite;
-        }
-
-        @keyframes bloomPulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
         }
 
         /* Screen Curvature */
@@ -134,46 +96,6 @@
             border-radius: 8px;
             box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
             pointer-events: none;
-        }
-
-        /* Analog Haze */
-        .screen-curve::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(17, 17, 17, 0.15);
-            pointer-events: none;
-            mix-blend-mode: overlay;
-        }
-
-        /* Tracking Line */
-        .tracking-line {
-            position: fixed;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.06);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 9999;
-            animation: tracking 18s linear infinite;
-        }
-
-        @keyframes tracking {
-            0% {
-                top: -10%;
-                opacity: 0;
-            }
-            8% {
-                opacity: 0.4;
-            }
-            10% {
-                opacity: 0;
-            }
-            100% {
-                top: 120%;
-                opacity: 0;
-            }
         }
 
         /* Loading Screen */
@@ -186,31 +108,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            animation: fadeOut 0.5s 2.8s forwards;
         }
 
-        .loading-screen.shutdown {
-            animation: crtShutdown 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-
-        @keyframes crtShutdown {
-            0% { 
-                opacity: 1;
-                transform: scaleY(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scaleY(0.02);
-            }
-            70% {
-                opacity: 0.8;
-                transform: scaleY(0.005);
-                filter: brightness(2);
-            }
-            100% { 
-                opacity: 0;
-                transform: scaleY(0);
-                pointer-events: none;
-            }
+        @keyframes fadeOut {
+            to { opacity: 0; pointer-events: none; }
         }
 
         .vhs-play {
@@ -220,7 +122,7 @@
             top: 30px;
             left: 30px;
             color: var(--white);
-            text-shadow: 0 0 4px rgba(212, 212, 212, 0.2);
+            text-shadow: 0 0 10px var(--glow);
             animation: playBlink 0.5s 0.3s;
         }
 
@@ -274,38 +176,9 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 110px 50px;
+            padding: 60px 30px;
             position: relative;
             z-index: 1;
-            transform-style: preserve-3d;
-        }
-
-        /* CRT Bulge Effect */
-        .crt-bulge {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-            transform: perspective(1000px) translateZ(0);
-            transform-origin: center center;
-        }
-
-        .crt-bulge::before {
-            content: "";
-            position: absolute;
-            inset: -2%;
-            background: transparent;
-            border-radius: 3% / 4%;
-            transform: scale(1.02) translateZ(20px);
-            transform-origin: center;
-        }
-
-        /* Apply subtle barrel distortion to content */
-        #content-wrapper {
-            position: relative;
-            transform: scale(0.995);
-            transform-origin: center;
-            border-radius: 2px;
         }
 
         /* VHS Overlay */
@@ -316,18 +189,9 @@
             font-family: 'VT323', monospace;
             font-size: 20px;
             color: var(--white);
+            text-shadow: 0 0 8px var(--glow);
             z-index: 100;
-            opacity: 0.65;
-            animation: overlayDrift 9s infinite ease-in-out;
-        }
-
-        @keyframes overlayDrift {
-            0%, 100% {
-                transform: translateX(0px);
-            }
-            50% {
-                transform: translateX(0.5px);
-            }
+            opacity: 0.7;
         }
 
         .rec-indicator {
@@ -383,14 +247,14 @@
         .channel-btn:hover {
             border-color: var(--white);
             color: var(--white);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
 
         .channel-btn.active {
             background: var(--white);
             color: var(--black);
             border-color: var(--white);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
         }
 
         /* Channel Sections */
@@ -410,38 +274,36 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        .channel {
-            animation: channelFadeIn 1.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
         .channel-header {
             font-family: 'VT323', monospace;
             font-size: 32px;
             margin-bottom: 10px;
             color: var(--white);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             letter-spacing: 2px;
         }
 
         .channel-title {
             font-family: 'VT323', monospace;
-            font-size: 48px;
-            margin-bottom: 70px;
+            font-size: 64px;
+            margin-bottom: 40px;
             line-height: 1.2;
             color: var(--white);
-            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            letter-spacing: 4px;
         }
 
         /* Channel 01 - Broadcast */
         .broadcast-content {
             display: flex;
             flex-direction: column;
-            gap: 50px;
+            gap: 30px;
             max-width: 800px;
         }
 
         .glitch-text {
-            font-size: 15px;
-            line-height: 2;
+            font-size: 18px;
+            line-height: 1.8;
             color: var(--light-gray);
             font-weight: 300;
         }
@@ -469,6 +331,68 @@
             50% { opacity: 1; }
         }
 
+        /* Sub-channel pages (accessible only from Channel 02) */
+        .sub-channel {
+            display: none;
+            min-height: 100vh;
+            animation: channelFadeIn 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sub-channel.active {
+            display: block;
+        }
+
+        .back-btn {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            color: var(--medium-gray);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 40px;
+            border: none;
+            background: none;
+            padding: 0;
+            transition: color 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .back-btn:hover {
+            color: var(--white);
+        }
+
+        .back-btn::before {
+            content: "←";
+        }
+
+        .sub-channel-title {
+            font-family: 'VT323', monospace;
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .sub-channel-label {
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            color: var(--medium-gray);
+            margin-bottom: 50px;
+            letter-spacing: 1px;
+        }
+
+        .sub-channel-body {
+            max-width: 700px;
+        }
+
+        .sub-channel-body p {
+            font-size: 15px;
+            line-height: 2.2;
+            color: var(--light-gray);
+            margin-bottom: 20px;
+        }
+
         /* Channel 02 - Archives */
         .archive-grid {
             display: grid;
@@ -481,21 +405,14 @@
             border: 1px solid var(--medium-gray);
             padding: 25px;
             background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
             transition: all 0.3s;
         }
 
         .archive-item:hover {
             border-color: var(--white);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
-        }
-
-        .archive-item:nth-child(2) {
-            margin-top: 18px;
-        }
-
-        .archive-item:nth-child(4) {
-            margin-top: -8px;
         }
 
         .archive-label {
@@ -539,7 +456,7 @@
         .tape-item:hover {
             border-color: var(--white);
             background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
         .tape-header {
@@ -627,7 +544,7 @@
         .contact-item:hover {
             border-color: var(--white);
             background: rgba(255, 255, 255, 0.03);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
 
         .contact-label {
@@ -657,26 +574,8 @@
         }
 
         @keyframes staticFlash {
-            0% {
-                opacity: 0;
-                transform: scaleY(1);
-            }
-            20% {
-                opacity: 0.7;
-                transform: scaleY(1.03) skewX(2deg);
-            }
-            40% {
-                opacity: 0.2;
-                transform: translateX(-2px);
-            }
-            60% {
-                opacity: 0.6;
-                transform: translateX(2px);
-            }
-            100% {
-                opacity: 0;
-                transform: scaleY(1);
-            }
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
 
         /* No Signal Easter Egg */
@@ -692,11 +591,9 @@
             font-family: 'VT323', monospace;
             font-size: 72px;
             color: var(--white);
-            text-shadow: 0 0 3px rgba(255, 255, 255, 0.12);
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
             animation: signalBlink 2s infinite;
-            letter-spacing: 12px;
-            opacity: 0.75;
-            filter: blur(0.4px);
+            letter-spacing: 6px;
         }
 
         @keyframes signalBlink {
@@ -707,12 +604,11 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
-                padding: 80px 25px;
+                padding: 40px 20px;
             }
 
             .channel-title {
-                font-size: 40px;
-                margin-bottom: 50px;
+                font-size: 48px;
             }
 
             .channel-selector {
@@ -765,17 +661,6 @@
     </style>
 </head>
 <body>
-    <!-- Audio Elements -->
-    <audio id="staticSound" loop>
-        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
-    </audio>
-    <audio id="channelSwitchSound">
-        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
-    </audio>
-    <audio id="startupSound">
-        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
-    </audio>
-
     <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="vhs-play">▶ PLAY</div>
@@ -793,7 +678,6 @@
         <div class="grain"></div>
         <div class="vignette"></div>
         <div class="screen-curve"></div>
-        <div class="tracking-line"></div>
     </div>
 
     <!-- VHS Overlay -->
@@ -808,9 +692,6 @@
     <!-- Static Transition -->
     <div class="static-transition" id="staticTransition"></div>
 
-    <!-- CRT Bulge Wrapper -->
-    <div class="crt-bulge"></div>
-
     <!-- Channel Selector -->
     <div class="channel-selector">
         <button class="channel-btn active" data-channel="01">01</button>
@@ -822,7 +703,6 @@
     </div>
 
     <!-- Main Container -->
-    <div id="content-wrapper">
     <div class="container">
         <!-- Channel 01 - Broadcast -->
         <section class="channel active" id="channel-01">
@@ -858,33 +738,102 @@
             <div class="channel-header">CH 02 — ARCHIVES</div>
             <h1 class="channel-title">ABOUT</h1>
             <div class="archive-grid">
-                <div class="archive-item">
+                <div class="archive-item" data-file="001">
                     <div class="archive-label">FILE_001</div>
                     <div class="archive-title">Origin</div>
                     <div class="archive-description">
                         Started coding just a year ago because of Linux. Every project I make tends to solve a problem and be (we need this) aesthetically unique and pleasant.
                     </div>
                 </div>
-                <div class="archive-item">
+                <div class="archive-item" data-file="002">
                     <div class="archive-label">FILE_002</div>
                     <div class="archive-title">Philosophy</div>
                     <div class="archive-description">
                         I believe that anyone can code if they can translate their ideas to a programming language. Websites like these can be built by anyone as long as they have the goals straight.
                     </div>
                 </div>
-                <div class="archive-item">
+                <div class="archive-item" data-file="003">
                     <div class="archive-label">FILE_003</div>
                     <div class="archive-title">Approach</div>
                     <div class="archive-description">
                         Learn just not by watching, but also by building. Make projects that may serve as inspiration for others to look upon and learn.
                     </div>
                 </div>
-                <div class="archive-item">
+                <div class="archive-item" data-file="004">
                     <div class="archive-label">FILE_004</div>
                     <div class="archive-title">Vision</div>
                     <div class="archive-description">
                         Creating tools that make stuff more easier. Building websites which aren't generic. Reviving niches that were better than present date's mainstream choices.
                     </div>
+                </div>
+            </div>
+
+            <!-- Sub-pages (accessible only from Channel 02) -->
+            <div class="sub-channel" id="sub-file-001">
+                <button class="back-btn" data-back="001">BACK TO ARCHIVES</button>
+                <div class="sub-channel-label">FILE_001 — ORIGIN</div>
+                <h1 class="sub-channel-title">How It Started</h1>
+                <div class="sub-channel-body">
+                    <p>
+                        I started coding just over a year ago, and it all began with Linux. I had an old machine that couldn't run Windows properly, so I installed Arch Linux on a whim. That decision changed everything.
+                    </p>
+                    <p>
+                        The terminal became my playground. I started writing small Bash scripts to automate things, then moved on to Python. Every problem I encountered became an excuse to build something. My first real project was Magnet — a package management wrapper that uses Distrobox to containerize Fedora and Debian on Arch, just because I wanted more software available.
+                    </p>
+                    <p>
+                        What I realized early on is that building things that solve real problems — even small ones — is incredibly satisfying. And if they can look good while doing it, even better.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sub-channel" id="sub-file-002">
+                <button class="back-btn" data-back="002">BACK TO ARCHIVES</button>
+                <div class="sub-channel-label">FILE_002 — PHILOSOPHY</div>
+                <h1 class="sub-channel-title">What I Believe</h1>
+                <div class="sub-channel-body">
+                    <p>
+                        I believe anyone can code. The barrier isn't intelligence or talent — it's finding the right way to translate what's in your head into something a computer can understand.
+                    </p>
+                    <p>
+                        A website like this one isn't magic. It's just HTML, CSS, and a little JavaScript. Anyone with enough curiosity and patience can build it. The hard part isn't the code — it's having a clear vision of what you want to make and the discipline to see it through.
+                    </p>
+                    <p>
+                        That's why I share my projects openly. If something I built helps one person realize they can build too, that's a win.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sub-channel" id="sub-file-003">
+                <button class="back-btn" data-back="003">BACK TO ARCHIVES</button>
+                <div class="sub-channel-label">FILE_003 — APPROACH</div>
+                <h1 class="sub-channel-title">How I Build</h1>
+                <div class="sub-channel-body">
+                    <p>
+                        I learn by building. Watching tutorials and reading docs only gets you so far — the real learning happens when you're stuck on something and have to figure it out yourself.
+                    </p>
+                    <p>
+                        My process is simple: have an idea, start building, get stuck, unstick myself, repeat. Every project teaches me something I didn't expect. Brew Haven taught me about layout and responsive design. Iron Vale taught me about structuring content. Magnet taught me about Linux internals and package management.
+                    </p>
+                    <p>
+                        I want my projects to serve as inspiration for others. Not because they're perfect — they're not — but because they show what's possible when you just start building.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sub-channel" id="sub-file-004">
+                <button class="back-btn" data-back="004">BACK TO ARCHIVES</button>
+                <div class="sub-channel-label">FILE_004 — VISION</div>
+                <h1 class="sub-channel-title">Where I'm Headed</h1>
+                <div class="sub-channel-body">
+                    <p>
+                        I want to build tools that make things easier for people. Software that doesn't get in your way. Websites that feel like they were made by a human, not a template.
+                    </p>
+                    <p>
+                        I'm tired of the generic, cookie-cutter web that dominates everything today. There used to be niches — weird, creative corners of the internet where people made things because they loved making them. I want to help bring some of that back.
+                    </p>
+                    <p>
+                        Whether it's through retro aesthetics, thoughtful interactions, or just building things that work the way they should, I want my work to feel intentional. Because the best technology is the kind you don't notice — it just works, and it feels right.
+                    </p>
                 </div>
             </div>
         </section>
@@ -924,30 +873,6 @@
                         Iron Vale is yet another mock website built for a Gym which teaches Boxing, Jiu-Jitsu and other self-defense and martial arts sports. It is a perfect example of what a simple website can look like.
                     </div>
                 </div>
-                <div class="tape-item">
-                    <div class="tape-header">[TAPE_04] RETRO TERMINAL</div>
-                    <div class="tape-meta">
-                        <span>STATUS: ONGOING</span>
-                        <span>YEAR: 2026</span>
-                    </div>
-                    <div class="tape-description">
-                        Browser-based terminal emulator with vintage CRT aesthetics. 
-                        Custom shell commands, file system, and nostalgic computing experience. 
-                        Built entirely in vanilla JavaScript.
-                    </div>
-                </div>
-                <div class="tape-item">
-                    <div class="tape-header">[TAPE_05] SIGNAL PROCESSOR</div>
-                    <div class="tape-meta">
-                        <span>STATUS: BETA</span>
-                        <span>YEAR: 2026</span>
-                    </div>
-                    <div class="tape-description">
-                        Real-time audio manipulation tool with VHS-inspired visual feedback. 
-                        Combines Web Audio API with canvas rendering to create analog-style 
-                        effects in a digital medium.
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -973,16 +898,6 @@
                 </div>
                 <div class="log-entry">
                     <div class="log-indicator"></div>
-                    <div class="log-skill">REACT</div>
-                    <div class="log-level">INTERMEDIATE</div>
-                </div>
-                <div class="log-entry">
-                    <div class="log-indicator"></div>
-                    <div class="log-skill">NODE.JS</div>
-                    <div class="log-level">INTERMEDIATE</div>
-                </div>
-                <div class="log-entry">
-                    <div class="log-indicator"></div>
                     <div class="log-skill">GIT</div>
                     <div class="log-level">LEARNING</div>
                 </div>
@@ -993,18 +908,8 @@
                 </div>
                 <div class="log-entry">
                     <div class="log-indicator"></div>
-                    <div class="log-skill">C++</div>
-                    <div class="log-level">EXPLORING</div>
-                </div>
-                <div class="log-entry">
-                    <div class="log-indicator"></div>
-                    <div class="log-skill">MACHINE LEARNING</div>
-                    <div class="log-level">LEARNING</div>
-                </div>
-                <div class="log-entry">
-                    <div class="log-indicator"></div>
-                    <div class="log-skill">WEBGL</div>
-                    <div class="log-level">EXPLORING</div>
+                    <div class="log-skill">C</div>
+                    <div class="log-level">INTERMEDIATE</div>
                 </div>
             </div>
         </section>
@@ -1046,135 +951,8 @@
             </div>
         </section>
     </div>
-    </div>
 
     <script>
-        // Audio System - Low volume authentic CRT sounds
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // CRT Power-on sound
-        function playCRTPowerOn() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(120, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(80, audioContext.currentTime + 0.3);
-            
-            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.02, audioContext.currentTime + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.6);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.6);
-        }
-
-        // Channel switch static burst
-        function playChannelStatic() {
-            const bufferSize = audioContext.sampleRate * 0.08;
-            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-            const data = buffer.getChannelData(0);
-            
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
-            }
-            
-            const source = audioContext.createBufferSource();
-            const gainNode = audioContext.createGain();
-            const filter = audioContext.createBiquadFilter();
-            
-            filter.type = 'bandpass';
-            filter.frequency.value = 2000;
-            filter.Q.value = 1;
-            
-            source.buffer = buffer;
-            source.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            gainNode.gain.value = 0.025;
-            
-            source.start();
-            
-            // Boost background static temporarily during channel switch
-            if (staticGain) {
-                const currentTime = audioContext.currentTime;
-                staticGain.gain.setValueAtTime(staticGain.gain.value, currentTime);
-                staticGain.gain.linearRampToValueAtTime(0.08, currentTime + 0.05);
-                staticGain.gain.linearRampToValueAtTime(0.015, currentTime + 0.3);
-            }
-        }
-
-        // Mechanical button click
-        function playButtonClick() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = 800;
-            oscillator.type = 'square';
-            
-            gainNode.gain.setValueAtTime(0.01, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.03);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.03);
-        }
-
-        // Faint CRT hum (very subtle background)
-        let hum = null;
-        let staticNoise = null;
-        let staticGain = null;
-        
-        function startCRTHum() {
-            hum = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            hum.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            hum.frequency.value = 60;
-            hum.type = 'sine';
-            gainNode.gain.value = 0.003;
-            
-            hum.start();
-        }
-
-        // Continuous static noise
-        function startContinuousStatic() {
-            const bufferSize = audioContext.sampleRate * 2;
-            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-            const data = buffer.getChannelData(0);
-            
-            // Generate white noise
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * 0.08;
-            }
-            
-            staticNoise = audioContext.createBufferSource();
-            staticNoise.buffer = buffer;
-            staticNoise.loop = true;
-            
-            staticGain = audioContext.createGain();
-            staticGain.gain.value = 0.015; // Very subtle
-            
-            // Low-pass filter for authentic TV static
-            const filter = audioContext.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 4000;
-            filter.Q.value = 0.7;
-            
-            staticNoise.connect(filter);
-            filter.connect(staticGain);
-            staticGain.connect(audioContext.destination);
-            
-            staticNoise.start(0);
-        }
-
         // Timestamp
         function updateTimestamp() {
             const now = new Date();
@@ -1191,17 +969,49 @@
         const channels = document.querySelectorAll('.channel');
         const staticTransition = document.getElementById('staticTransition');
         const currentChannelDisplay = document.getElementById('current-channel');
+        const subChannels = document.querySelectorAll('.sub-channel');
+        const archiveItems = document.querySelectorAll('.archive-item');
+        const backButtons = document.querySelectorAll('.back-btn');
+        let activeSubChannel = null;
+
+        // Sub-channel navigation: open a file
+        archiveItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const fileNum = item.dataset.file;
+                const target = document.getElementById(`sub-file-${fileNum}`);
+                if (!target) return;
+
+                staticTransition.classList.add('active');
+
+                setTimeout(() => {
+                    subChannels.forEach(sc => sc.classList.remove('active'));
+                    target.classList.add('active');
+                    document.querySelector('.archive-grid').style.display = 'none';
+                    activeSubChannel = fileNum;
+                    currentChannelDisplay.textContent = `CH 02 — FILE_${fileNum}`;
+                    staticTransition.classList.remove('active');
+                }, 150);
+            });
+        });
+
+        // Sub-channel navigation: go back to archives
+        backButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                staticTransition.classList.add('active');
+
+                setTimeout(() => {
+                    subChannels.forEach(sc => sc.classList.remove('active'));
+                    document.querySelector('.archive-grid').style.display = 'grid';
+                    activeSubChannel = null;
+                    currentChannelDisplay.textContent = 'CH 02';
+                    staticTransition.classList.remove('active');
+                }, 150);
+            });
+        });
 
         channelButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const channelNum = button.dataset.channel;
-                
-                // Play sounds
-                playButtonClick();
-                
-                setTimeout(() => {
-                    playChannelStatic();
-                }, 50);
                 
                 // Show static transition
                 staticTransition.classList.add('active');
@@ -1214,37 +1024,32 @@
                     // Switch active channel
                     channels.forEach(channel => channel.classList.remove('active'));
                     document.getElementById(`channel-${channelNum}`).classList.add('active');
-                    
+
+                    // Close any open sub-channel
+                    subChannels.forEach(sc => sc.classList.remove('active'));
+                    const archiveGrid = document.querySelector('.archive-grid');
+                    if (archiveGrid) archiveGrid.style.display = 'grid';
+                    activeSubChannel = null;
+
                     // Update channel display
                     currentChannelDisplay.textContent = `CH ${channelNum}`;
                     
                     // Remove static
                     staticTransition.classList.remove('active');
-                }, 200);
+                }, 150);
             });
         });
 
-        // Random static flicker effect - very subtle
+        // Random static flicker effect
         function randomFlicker() {
-            if (Math.random() > 0.98) {
+            if (Math.random() > 0.95) {
                 staticTransition.classList.add('active');
                 setTimeout(() => {
                     staticTransition.classList.remove('active');
-                }, 40);
+                }, 50);
             }
         }
-        setInterval(randomFlicker, 12000);
-
-        // Weak signal events - very subtle body shift
-        function weakSignalEvent() {
-            if (Math.random() > 0.99) {
-                document.body.style.transform = 'translateX(0.5px)';
-                setTimeout(() => {
-                    document.body.style.transform = 'translateX(0px)';
-                }, 60);
-            }
-        }
-        setInterval(weakSignalEvent, 6000);
+        setInterval(randomFlicker, 5000);
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -1255,30 +1060,13 @@
             }
         });
 
-        // Remove loading screen with CRT shutdown effect
+        // Remove loading screen after animation
         setTimeout(() => {
             const loadingScreen = document.querySelector('.loading-screen');
             if (loadingScreen) {
-                loadingScreen.classList.add('shutdown');
-                
-                // Play power-on sound
-                setTimeout(() => {
-                    playCRTPowerOn();
-                    // Start subtle CRT hum
-                    setTimeout(() => {
-                        startCRTHum();
-                        // Start continuous static
-                        setTimeout(() => {
-                            startContinuousStatic();
-                        }, 200);
-                    }, 400);
-                }, 500);
-                
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                }, 1300);
+                loadingScreen.style.display = 'none';
             }
-        }, 3000);
+        }, 3500);
     </script>
 </body>
 </html>
