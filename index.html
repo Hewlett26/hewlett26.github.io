@@ -953,6 +953,90 @@
     </div>
 
     <script>
+        // Audio System - Low volume authentic CRT sounds
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // CRT Power-on sound
+        function playCRTPowerOn() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.setValueAtTime(120, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(80, audioContext.currentTime + 0.3);
+
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.02, audioContext.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.6);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.6);
+        }
+
+        // Channel switch static burst
+        function playChannelStatic() {
+            const bufferSize = audioContext.sampleRate * 0.08;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+            }
+
+            const source = audioContext.createBufferSource();
+            const gainNode = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+
+            filter.type = 'bandpass';
+            filter.frequency.value = 2000;
+            filter.Q.value = 1;
+
+            source.buffer = buffer;
+            source.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            gainNode.gain.value = 0.015;
+
+            source.start();
+        }
+
+        // Mechanical button click
+        function playButtonClick() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 800;
+            oscillator.type = 'square';
+
+            gainNode.gain.setValueAtTime(0.01, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.03);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.03);
+        }
+
+        // Faint CRT hum
+        let hum = null;
+        function startCRTHum() {
+            hum = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            hum.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            hum.frequency.value = 60;
+            hum.type = 'sine';
+            gainNode.gain.value = 0.003;
+
+            hum.start();
+        }
+
         // Timestamp
         function updateTimestamp() {
             const now = new Date();
@@ -981,6 +1065,9 @@
                 const target = document.getElementById(`sub-file-${fileNum}`);
                 if (!target) return;
 
+                playButtonClick();
+                setTimeout(() => playChannelStatic(), 50);
+
                 staticTransition.classList.add('active');
 
                 setTimeout(() => {
@@ -997,6 +1084,9 @@
         // Sub-channel navigation: go back to archives
         backButtons.forEach(btn => {
             btn.addEventListener('click', () => {
+                playButtonClick();
+                setTimeout(() => playChannelStatic(), 50);
+
                 staticTransition.classList.add('active');
 
                 setTimeout(() => {
@@ -1012,7 +1102,14 @@
         channelButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const channelNum = button.dataset.channel;
-                
+
+                // Play sounds
+                playButtonClick();
+
+                setTimeout(() => {
+                    playChannelStatic();
+                }, 50);
+
                 // Show static transition
                 staticTransition.classList.add('active');
                 
@@ -1067,6 +1164,14 @@
                 loadingScreen.style.display = 'none';
             }
         }, 3500);
+
+        // Play startup sounds after loading screen
+        setTimeout(() => {
+            playCRTPowerOn();
+            setTimeout(() => {
+                startCRTHum();
+            }, 400);
+        }, 2800);
     </script>
 </body>
 </html>
