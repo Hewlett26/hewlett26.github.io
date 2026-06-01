@@ -591,12 +591,12 @@
             100% { opacity: 0; }
         }
 
-        /* No Signal Easter Egg */
+        /* No Signal → AI Terminal */
         .no-signal {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start;
+            justify-content: flex-start;
             min-height: 80vh;
         }
 
@@ -612,6 +612,139 @@
         @keyframes signalBlink {
             0%, 49%, 51%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
+        }
+
+        /* AI Terminal */
+        .ai-terminal-wrap {
+            width: 100%;
+            max-width: 860px;
+            margin-top: 40px;
+            border: 1px solid var(--medium-gray);
+            background: rgba(255,255,255,0.02);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .ai-terminal-title {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .ai-status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--white);
+            border-radius: 50%;
+            animation: recBlink 1.5s infinite;
+        }
+
+        .ai-log {
+            padding: 20px;
+            height: 340px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--medium-gray) transparent;
+        }
+
+        .ai-entry {
+            display: flex;
+            gap: 12px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .ai-entry-prefix {
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            color: var(--medium-gray);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .ai-entry.user .ai-entry-prefix { color: var(--white); }
+        .ai-entry.bot .ai-entry-prefix  { color: var(--light-gray); }
+        .ai-entry.sys .ai-entry-prefix  { color: var(--medium-gray); }
+        .ai-entry.sys .ai-entry-text    { color: var(--medium-gray); }
+        .ai-entry.err .ai-entry-text    { color: #888; }
+
+        .ai-entry-text {
+            color: var(--light-gray);
+            word-break: break-word;
+        }
+
+        /* blinking block cursor */
+        .ai-cursor::after {
+            content: '█';
+            animation: cursorBlink 0.7s step-end infinite;
+        }
+        @keyframes cursorBlink { 50% { opacity: 0; } }
+
+        .ai-input-row {
+            display: flex;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        .ai-input-prefix {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            color: var(--medium-gray);
+            padding: 12px 0 12px 20px;
+            flex-shrink: 0;
+        }
+
+        .ai-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--white);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            padding: 13px 12px;
+            outline: none;
+            caret-color: var(--white);
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+        }
+
+        .ai-input::placeholder { color: var(--medium-gray); }
+
+        .ai-send-btn {
+            background: none;
+            border: none;
+            border-left: 1px solid var(--medium-gray);
+            color: var(--medium-gray);
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            letter-spacing: 1px;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .ai-send-btn:hover:not(:disabled) {
+            color: var(--white);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .ai-send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        @media (max-width: 768px) {
+            .ai-log { height: 260px; }
         }
 
         /* Responsive Design */
@@ -965,10 +1098,43 @@
             </div>
         </section>
 
-        <!-- Channel 00 - No Signal (Easter Egg) -->
+        <!-- Channel 00 - Vault AI (Easter Egg) -->
         <section class="channel" id="channel-00">
+            <div class="channel-header">CH 00 — CLASSIFIED</div>
+            <h1 class="channel-title">VAULT.AI</h1>
             <div class="no-signal">
-                <div class="no-signal-text">NO SIGNAL</div>
+                <p class="glitch-text" style="margin-bottom: 20px;">
+                    DIRECT LINE TO THE VAULT.<br>
+                    <span style="color: var(--medium-gray); font-size: 13px;">Powered by Himank's Obsidian knowledge base.</span>
+                </p>
+                <div class="ai-terminal-wrap">
+                    <div class="ai-terminal-header">
+                        <span class="ai-terminal-title">&#x2B21; VAULT SIGNAL // LIVE</span>
+                        <span class="ai-status-dot"></span>
+                    </div>
+                    <div class="ai-log" id="ai-log">
+                        <div class="ai-entry sys">
+                            <span class="ai-entry-prefix">SYS</span>
+                            <span class="ai-entry-text">INITIALIZING VAULT CONNECTION...</span>
+                        </div>
+                        <div class="ai-entry sys">
+                            <span class="ai-entry-prefix">SYS</span>
+                            <span class="ai-entry-text">Ask me anything about Himank — his projects, philosophy, how he builds things, or what he's thinking about.</span>
+                        </div>
+                    </div>
+                    <div class="ai-input-row">
+                        <span class="ai-input-prefix">&gt;_</span>
+                        <input
+                            class="ai-input"
+                            id="ai-input"
+                            type="text"
+                            placeholder="Transmit query..."
+                            maxlength="300"
+                            autocomplete="off"
+                        />
+                        <button class="ai-send-btn" id="ai-send-btn">SEND</button>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
@@ -1223,6 +1389,77 @@
                 startWhiteNoise();
             }, 400);
         }, 2800);
+
+        // ── VAULT AI ──────────────────────────────────────────────────────────
+        const WORKER_URL = "https://obsidian-ai.hewlett-portfolio.workers.dev";
+
+        function aiLog(text, type = "bot") {
+            const log = document.getElementById("ai-log");
+            if (!log) return null;
+            const entry = document.createElement("div");
+            entry.className = `ai-entry ${type}`;
+            const prefix = document.createElement("span");
+            prefix.className = "ai-entry-prefix";
+            prefix.textContent = type === "user" ? "YOU" : type === "bot" ? "VAI" : type === "err" ? "ERR" : "SYS";
+            const text_el = document.createElement("span");
+            text_el.className = "ai-entry-text";
+            text_el.textContent = text;
+            entry.appendChild(prefix);
+            entry.appendChild(text_el);
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+            return text_el;
+        }
+
+        async function sendVaultQuery() {
+            const input = document.getElementById("ai-input");
+            const btn   = document.getElementById("ai-send-btn");
+            if (!input || !btn) return;
+
+            const question = input.value.trim();
+            if (!question) return;
+
+            aiLog(question, "user");
+            input.value = "";
+            input.disabled = true;
+            btn.disabled = true;
+
+            // Typing indicator
+            const typingEl = aiLog("", "bot");
+            typingEl.classList.add("ai-cursor");
+
+            try {
+                const res = await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question }),
+                });
+                const data = await res.json();
+                typingEl.classList.remove("ai-cursor");
+                typingEl.textContent = data.answer || data.error || "Signal lost. No response from vault.";
+            } catch (e) {
+                typingEl.classList.remove("ai-cursor");
+                typingEl.className = "ai-entry-text";
+                typingEl.textContent = "TRANSMISSION FAILED. Check worker connection.";
+                typingEl.closest(".ai-entry").className = "ai-entry err";
+            }
+
+            input.disabled = false;
+            btn.disabled = false;
+            input.focus();
+            document.getElementById("ai-log").scrollTop = 99999;
+        }
+
+        // Wire up input + button (they may not exist on page load if wrong channel)
+        document.addEventListener("click", e => {
+            if (e.target && e.target.id === "ai-send-btn") sendVaultQuery();
+        });
+        document.addEventListener("keydown", e => {
+            if (e.key === "Enter" && document.activeElement && document.activeElement.id === "ai-input") {
+                sendVaultQuery();
+            }
+        });
+        // ── END VAULT AI ──────────────────────────────────────────────────────
     </script>
 </body>
 </html>
