@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYOA Game Maker — Himank Khiani</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        :root {
+            --black: #0a0a0a;
+            --dark-gray: #1a1a1a;
+            --medium-gray: #666;
+            --light-gray: #999;
+            --white: #e8e8e8;
+            --glow: #fff;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* CRT Screen Container */
+        .crt-screen {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            animation: analogFlicker 0.1s step-end infinite;
+        }
+
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.95; }
+            50% { opacity: 0.98; }
+            100% { opacity: 0.96; }
+        }
+
+        @keyframes analogFlicker {
+            0%, 20%, 40%, 60%, 80%, 100% { opacity: 1; }
+            10% { opacity: 0.985; }
+            30% { opacity: 0.99; }
+            50% { opacity: 0.995; }
+            70% { opacity: 0.98; }
+            90% { opacity: 0.988; }
+        }
+
+        .grain {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise' /%3E%3CfeColorMatrix in='noise' type='saturate' values='0' /%3E%3C/filter%3E%3Crect width='400' height='400' fill='white' filter='url(%23noiseFilter)' /%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+            animation: grainMove 0.5s steps(4) infinite;
+        }
+
+        @keyframes grainMove {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-2%, 2%); }
+            50% { transform: translate(2%, -2%); }
+            75% { transform: translate(-2%, -2%); }
+        }
+
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+            pointer-events: none;
+        }
+
+        .screen-curve {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+        }
+
+        /* VHS Overlay */
+        .vhs-overlay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            color: var(--white);
+            text-shadow: 0 0 8px var(--glow);
+            z-index: 100;
+            opacity: 0.7;
+        }
+
+        .rec-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: var(--white);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: recBlink 1.5s infinite;
+        }
+
+        @keyframes recBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .timestamp {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            color: var(--light-gray);
+            z-index: 100;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header {
+            font-family: 'VT323', monospace;
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--white);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .page-title {
+            font-family: 'VT323', monospace;
+            font-size: 64px;
+            margin-bottom: 40px;
+            line-height: 1.2;
+            color: var(--white);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            letter-spacing: 4px;
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--medium-gray);
+            padding-bottom: 20px;
+        }
+
+        .toggle-btn {
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            color: var(--light-gray);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .toggle-btn:hover {
+            color: var(--white);
+        }
+
+        .toggle-btn.active {
+            color: var(--white);
+            border-bottom: 2px solid var(--white);
+            margin-bottom: -22px;
+            padding-bottom: 8px;
+        }
+
+        /* Editor Section */
+        .editor-section {
+            display: none;
+        }
+
+        .editor-section.active {
+            display: block;
+        }
+
+        /* Story Editor */
+        .story-editor {
+            max-width: 800px;
+        }
+
+        .editor-group {
+            margin-bottom: 40px;
+        }
+
+        .editor-label {
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            color: var(--white);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            display: block;
+        }
+
+        .editor-input,
+        .editor-textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--medium-gray);
+            color: var(--white);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            padding: 12px 15px;
+            transition: all 0.3s;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+        }
+
+        .editor-input:focus,
+        .editor-textarea:focus {
+            outline: none;
+            border-color: var(--white);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-input::placeholder,
+        .editor-textarea::placeholder {
+            color: var(--medium-gray);
+        }
+
+        .editor-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Node Editor */
+        .nodes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .node-card {
+            border: 2px solid var(--medium-gray);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .node-card:hover {
+            border-color: var(--white);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .node-id {
+            font-family: 'VT323', monospace;
+            font-size: 12px;
+            color: var(--medium-gray);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .node-text {
+            font-size: 14px;
+            color: var(--light-gray);
+            margin-bottom: 15px;
+            line-height: 1.6;
+            min-height: 50px;
+        }
+
+        .node-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .choice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--dark-gray);
+            color: var(--light-gray);
+            gap: 10px;
+        }
+
+        .choice-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .choice-target {
+            color: var(--medium-gray);
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .choice-remove-btn {
+            background: none;
+            border: none;
+            color: var(--medium-gray);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0 5px;
+            transition: color 0.2s;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+        }
+
+        .choice-remove-btn:hover {
+            color: var(--white);
+        }
+
+        .node-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--dark-gray);
+        }
+
+        .btn-small {
+            flex: 1;
+            font-family: 'VT323', monospace;
+            font-size: 12px;
+            background: none;
+            border: 1px solid var(--medium-gray);
+            color: var(--light-gray);
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .btn-small:hover {
+            border-color: var(--white);
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Add Node Section */
+        .add-node-section {
+            border: 2px dashed var(--medium-gray);
+            padding: 30px;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.01);
+            transition: all 0.3s;
+        }
+
+        .add-node-section:hover {
+            border-color: var(--white);
+        }
+
+        .add-node-section h3 {
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--white);
+            letter-spacing: 1px;
+        }
+
+        .add-node-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--white);
+            color: var(--white);
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Game Player */
+        .game-player {
+            max-width: 700px;
+            min-height: 60vh;
+            border: 2px solid var(--medium-gray);
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .game-not-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            color: var(--light-gray);
+        }
+
+        .game-not-selected p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .game-node {
+            display: none;
+        }
+
+        .game-node.active {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .game-node-id {
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            color: var(--medium-gray);
+            letter-spacing: 1px;
+        }
+
+        .game-node-text {
+            font-size: 18px;
+            color: var(--white);
+            line-height: 2;
+            min-height: 100px;
+        }
+
+        .game-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            text-align: left;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--medium-gray);
+            color: var(--light-gray);
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn::before {
+            content: "→ ";
+            color: var(--medium-gray);
+            margin-right: 10px;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--white);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--white);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .game-end {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--white);
+        }
+
+        .game-end h2 {
+            font-family: 'VT323', monospace;
+            font-size: 32px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .reset-btn {
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--medium-gray);
+            color: var(--light-gray);
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--white);
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Export Section */
+        .export-section {
+            border-top: 1px solid var(--medium-gray);
+            padding-top: 40px;
+            margin-top: 40px;
+        }
+
+        .export-section h3 {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--white);
+            letter-spacing: 1px;
+        }
+
+        .export-textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--medium-gray);
+            color: var(--light-gray);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            resize: vertical;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-export {
+            flex: 1;
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            background: none;
+            border: 1px solid var(--medium-gray);
+            color: var(--light-gray);
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .btn-export:hover {
+            border-color: var(--white);
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Info Box */
+        .info-box {
+            border: 1px solid var(--medium-gray);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 30px;
+            color: var(--light-gray);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .info-box strong {
+            color: var(--white);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .page-title {
+                font-size: 48px;
+            }
+
+            .nodes-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .vhs-overlay {
+                font-size: 14px;
+            }
+
+            .timestamp {
+                font-size: 12px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- CRT Screen Effects -->
+    <div class="crt-screen">
+        <div class="scanlines"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="screen-curve"></div>
+    </div>
+
+    <!-- VHS Overlay -->
+    <div class="vhs-overlay">
+        <span class="rec-indicator"></span>
+        <span>CYOA STUDIO</span>
+    </div>
+
+    <!-- Timestamp -->
+    <div class="timestamp" id="timestamp"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="page-header">CYOA STUDIO — INTERACTIVE NARRATIVE</div>
+        <h1 class="page-title">GAME MAKER</h1>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+            <button class="toggle-btn active" data-view="editor">EDIT</button>
+            <button class="toggle-btn" data-view="player">PLAY</button>
+            <button class="toggle-btn" data-view="export">EXPORT</button>
+        </div>
+
+        <!-- EDITOR VIEW -->
+        <div class="editor-section active" id="editor-view">
+            <div class="info-box">
+                <strong>HOW TO USE:</strong> Create a story by defining nodes. Each node has text and choices that lead to other nodes. Start with a node ID of "start" for your beginning. Mark end nodes with "END" to finish the story.
+            </div>
+
+            <!-- Game Settings -->
+            <div class="editor-group">
+                <label class="editor-label">GAME TITLE</label>
+                <input type="text" class="editor-input" id="gameTitle" placeholder="Enter your game title...">
+            </div>
+
+            <div class="editor-group">
+                <label class="editor-label">DESCRIPTION</label>
+                <textarea class="editor-textarea" id="gameDescription" placeholder="Describe your game..."></textarea>
+            </div>
+
+            <!-- Nodes Display -->
+            <div class="editor-group">
+                <label class="editor-label">STORY NODES</label>
+                <div class="nodes-container" id="nodesContainer"></div>
+            </div>
+
+            <!-- Add New Node -->
+            <div class="add-node-section">
+                <h3>ADD NEW NODE</h3>
+                <div class="add-node-form">
+                    <div class="form-row">
+                        <div class="editor-group">
+                            <label class="editor-label">NODE ID</label>
+                            <input type="text" class="editor-input" id="newNodeId" placeholder="e.g., node_1" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                        </div>
+                        <div class="editor-group">
+                            <label class="editor-label">NODE TEXT</label>
+                            <input type="text" class="editor-input" id="newNodeText" placeholder="What does the player see?" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                        </div>
+                    </div>
+                    <div class="editor-group">
+                        <label class="editor-label">CHOICE TEXT (Optional)</label>
+                        <input type="text" class="editor-input" id="newChoiceText" placeholder="What can the player choose?" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                    </div>
+                    <div class="editor-group">
+                        <label class="editor-label">NEXT NODE ID (Optional)</label>
+                        <input type="text" class="editor-input" id="newNextNode" placeholder="Where does this choice lead?" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                    </div>
+                    <button class="btn-primary" id="addNodeBtn">+ ADD NODE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAYER VIEW -->
+        <div class="editor-section" id="player-view">
+            <div class="game-player" id="gamePlayer">
+                <div class="game-not-selected">
+                    <p>LOAD A GAME TO PLAY</p>
+                    <p style="font-size: 12px; color: var(--medium-gray);">Create nodes in the EDIT tab and use PLAY to test your story.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXPORT VIEW -->
+        <div class="editor-section" id="export-view">
+            <div class="export-section">
+                <h3>EXPORT STORY DATA</h3>
+                <p style="color: var(--light-gray); margin-bottom: 20px; font-size: 14px;">Copy this JSON data to save, share, or import your story.</p>
+                <textarea class="export-textarea" id="exportData" readonly></textarea>
+                <div class="export-buttons">
+                    <button class="btn-export" id="copyExportBtn">COPY JSON</button>
+                    <button class="btn-export" id="downloadExportBtn">DOWNLOAD</button>
+                </div>
+            </div>
+
+            <div class="export-section">
+                <h3>IMPORT STORY DATA</h3>
+                <p style="color: var(--light-gray); margin-bottom: 20px; font-size: 14px;">Paste previously exported JSON to restore a story.</p>
+                <textarea class="export-textarea" id="importData" placeholder="Paste JSON here..."></textarea>
+                <button class="btn-primary" id="importBtn">IMPORT STORY</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            title: "Untitled Adventure",
+            description: "My interactive story",
+            nodes: new Map(),
+            currentNode: null
+        };
+
+        // Initialize
+        function init() {
+            setupEventListeners();
+            updateTimestamp();
+            createDefaultStartNode();
+        }
+
+        function setupEventListeners() {
+            // View toggle
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.editor-section').forEach(s => s.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const view = e.target.dataset.view;
+                    document.getElementById(`${view}-view`).classList.add('active');
+                    
+                    if (view === 'export') {
+                        updateExportData();
+                    } else if (view === 'player') {
+                        loadGameForPlay();
+                    }
+                });
+            });
+
+            // Game settings
+            document.getElementById('gameTitle').addEventListener('input', (e) => {
+                state.title = e.target.value || "Untitled Adventure";
+            });
+
+            document.getElementById('gameDescription').addEventListener('input', (e) => {
+                state.description = e.target.value || "";
+            });
+
+            // Add node
+            document.getElementById('addNodeBtn').addEventListener('click', addNewNode);
+            
+            document.getElementById('newNodeId').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addNewNode();
+            });
+
+            // Export
+            document.getElementById('copyExportBtn').addEventListener('click', () => {
+                const textarea = document.getElementById('exportData');
+                textarea.select();
+                document.execCommand('copy');
+                alert('JSON copied to clipboard!');
+            });
+
+            document.getElementById('downloadExportBtn').addEventListener('click', downloadJSON);
+            document.getElementById('importBtn').addEventListener('click', importJSON);
+        }
+
+        function createDefaultStartNode() {
+            if (state.nodes.size === 0) {
+                state.nodes.set('start', {
+                    id: 'start',
+                    text: 'You wake up in a mysterious place. What do you do?',
+                    choices: []
+                });
+                renderNodes();
+            }
+        }
+
+        function addNewNode() {
+            const id = document.getElementById('newNodeId').value.trim();
+            const text = document.getElementById('newNodeText').value.trim();
+            const choiceText = document.getElementById('newChoiceText').value.trim();
+            const nextNode = document.getElementById('newNextNode').value.trim();
+
+            if (!id || !text) {
+                alert('Node ID and text are required!');
+                return;
+            }
+
+            if (state.nodes.has(id)) {
+                alert('Node ID already exists!');
+                return;
+            }
+
+            const node = {
+                id,
+                text,
+                choices: []
+            };
+
+            if (choiceText && nextNode) {
+                node.choices.push({ text: choiceText, target: nextNode });
+            }
+
+            state.nodes.set(id, node);
+
+            // Clear inputs
+            document.getElementById('newNodeId').value = '';
+            document.getElementById('newNodeText').value = '';
+            document.getElementById('newChoiceText').value = '';
+            document.getElementById('newNextNode').value = '';
+
+            renderNodes();
+        }
+
+        function renderNodes() {
+            const container = document.getElementById('nodesContainer');
+            container.innerHTML = '';
+
+            state.nodes.forEach((node, id) => {
+                const card = document.createElement('div');
+                card.className = 'node-card';
+                
+                let choicesHTML = '';
+                if (node.choices.length > 0) {
+                    node.choices.forEach((choice, idx) => {
+                        choicesHTML += `
+                            <div class="choice-item">
+                                <div class="choice-text">${escapeHtml(choice.text)}</div>
+                                <div class="choice-target">→ ${escapeHtml(choice.target)}</div>
+                                <button class="choice-remove-btn" onclick="removeChoice('${id}', ${idx})" title="Remove choice">✕</button>
+                            </div>
+                        `;
+                    });
+                }
+
+                card.innerHTML = `
+                    <div class="node-id">${escapeHtml(id)}</div>
+                    <div class="node-text">${escapeHtml(node.text)}</div>
+                    ${node.choices.length > 0 ? `<div class="node-choices">${choicesHTML}</div>` : ''}
+                    <div class="node-controls">
+                        <button class="btn-small" onclick="editNode('${id}')">EDIT</button>
+                        <button class="btn-small" onclick="deleteNode('${id}')">DELETE</button>
+                        <button class="btn-small" onclick="addChoiceToNode('${id}')">+ CHOICE</button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function addChoiceToNode(nodeId) {
+            const choiceText = prompt('Enter choice text:');
+            if (!choiceText) return;
+
+            const targetId = prompt('Enter target node ID:');
+            if (!targetId) return;
+
+            const node = state.nodes.get(nodeId);
+            if (node) {
+                node.choices.push({ text: choiceText, target: targetId });
+                renderNodes();
+            }
+        }
+
+        function removeChoice(nodeId, choiceIdx) {
+            const node = state.nodes.get(nodeId);
+            if (node) {
+                node.choices.splice(choiceIdx, 1);
+                renderNodes();
+            }
+        }
+
+        function editNode(nodeId) {
+            const node = state.nodes.get(nodeId);
+            if (!node) return;
+
+            const newText = prompt('Edit node text:', node.text);
+            if (newText !== null && newText.trim()) {
+                node.text = newText.trim();
+                renderNodes();
+            }
+        }
+
+        function deleteNode(nodeId) {
+            if (confirm(`Delete node "${nodeId}"?`)) {
+                state.nodes.delete(nodeId);
+                // Remove references to this node
+                state.nodes.forEach(node => {
+                    node.choices = node.choices.filter(c => c.target !== nodeId);
+                });
+                renderNodes();
+            }
+        }
+
+        function loadGameForPlay() {
+            if (state.nodes.size === 0) {
+                document.getElementById('gamePlayer').innerHTML = '<div class="game-not-selected"><p>NO NODES CREATED</p><p style="font-size: 12px; color: var(--medium-gray);">Create at least one node in the EDIT tab.</p></div>';
+                return;
+            }
+
+            const startNode = state.nodes.get('start');
+            if (!startNode) {
+                document.getElementById('gamePlayer').innerHTML = '<div class="game-not-selected"><p>NO START NODE</p><p style="font-size: 12px; color: var(--medium-gray);">Create a node with ID "start" to begin.</p></div>';
+                return;
+            }
+
+            state.currentNode = 'start';
+            renderGameNode();
+        }
+
+        function renderGameNode() {
+            const nodeId = state.currentNode;
+            const node = state.nodes.get(nodeId);
+
+            if (!node) {
+                state.currentNode = null;
+                return;
+            }
+
+            const player = document.getElementById('gamePlayer');
+            
+            if (nodeId === 'END' || node.text.includes('END')) {
+                player.innerHTML = `
+                    <div class="game-end">
+                        <h2>STORY COMPLETE</h2>
+                        <p>Thank you for playing.</p>
+                        <button class="reset-btn" onclick="location.reload()">PLAY AGAIN</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let choicesHTML = '';
+            if (node.choices.length > 0) {
+                node.choices.forEach((choice) => {
+                    choicesHTML += `
+                        <button class="choice-btn" onclick="playChoice('${choice.target}')">${escapeHtml(choice.text)}</button>
+                    `;
+                });
+            } else {
+                choicesHTML = '<p style="color: var(--medium-gray); text-align: center; margin-top: 30px;">No choices available. This may be an end node.</p>';
+            }
+
+            player.innerHTML = `
+                <div class="game-node active">
+                    <div class="game-node-id">${escapeHtml(nodeId)}</div>
+                    <div class="game-node-text">${escapeHtml(node.text)}</div>
+                    <div class="game-choices">${choicesHTML}</div>
+                </div>
+            `;
+        }
+
+        function playChoice(targetId) {
+            if (!state.nodes.has(targetId) && targetId !== 'END') {
+                alert(`Target node "${targetId}" does not exist!`);
+                return;
+            }
+            state.currentNode = targetId;
+            renderGameNode();
+        }
+
+        function updateExportData() {
+            const data = {
+                title: state.title,
+                description: state.description,
+                nodes: Array.from(state.nodes.values())
+            };
+            document.getElementById('exportData').value = JSON.stringify(data, null, 2);
+        }
+
+        function downloadJSON() {
+            const data = {
+                title: state.title,
+                description: state.description,
+                nodes: Array.from(state.nodes.values())
+            };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.title.replace(/\s+/g, '_')}_story.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importJSON() {
+            const jsonText = document.getElementById('importData').value.trim();
+            try {
+                const data = JSON.parse(jsonText);
+                if (!data.nodes || !Array.isArray(data.nodes)) {
+                    alert('Invalid JSON format!');
+                    return;
+                }
+
+                state.title = data.title || "Imported Story";
+                state.description = data.description || "";
+                state.nodes.clear();
+
+                data.nodes.forEach(node => {
+                    state.nodes.set(node.id, {
+                        id: node.id,
+                        text: node.text,
+                        choices: node.choices || []
+                    });
+                });
+
+                document.getElementById('gameTitle').value = state.title;
+                document.getElementById('gameDescription').value = state.description;
+                document.getElementById('importData').value = '';
+
+                // Switch to editor view
+                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.editor-section').forEach(s => s.classList.remove('active'));
+                document.querySelector('[data-view="editor"]').classList.add('active');
+                document.getElementById('editor-view').classList.add('active');
+
+                renderNodes();
+                alert('Story imported successfully!');
+            } catch (e) {
+                alert('Invalid JSON: ' + e.message);
+            }
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('timestamp').textContent = `${hours}:${mins}`;
+            setTimeout(updateTimestamp, 10000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
