@@ -44,6 +44,7 @@
             animation: analogFlicker 0.1s step-end infinite;
         }
 
+        /* Scanlines Effect */
         .scanlines {
             position: absolute;
             inset: 0;
@@ -73,6 +74,7 @@
             90% { opacity: 0.988; }
         }
 
+        /* Film Grain */
         .grain {
             position: absolute;
             inset: 0;
@@ -89,6 +91,7 @@
             75% { transform: translate(-2%, -2%); }
         }
 
+        /* Vignette */
         .vignette {
             position: absolute;
             inset: 0;
@@ -96,12 +99,96 @@
             pointer-events: none;
         }
 
+        /* Screen Curvature */
         .screen-curve {
             position: absolute;
             inset: 0;
             border-radius: 8px;
             box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
             pointer-events: none;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--black);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeOut 0.5s 2.8s forwards;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; pointer-events: none; }
+        }
+
+        .vhs-play {
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: var(--white);
+            text-shadow: 0 0 10px var(--glow);
+            animation: playBlink 0.5s 0.3s;
+        }
+
+        @keyframes playBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .glitch-line {
+            width: 100%;
+            height: 3px;
+            background: var(--white);
+            position: absolute;
+            top: 40%;
+            animation: glitchSlide 0.4s 0.8s;
+        }
+
+        @keyframes glitchSlide {
+            0% { transform: translateX(-100%); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+
+        .static-noise {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='5' numOctaves='4' /%3E%3CfeColorMatrix type='saturate' values='0' /%3E%3C/filter%3E%3Crect width='400' height='400' fill='white' filter='url(%23noise)' /%3E%3C/svg%3E");
+            opacity: 0;
+            animation: staticPulse 0.3s 1.2s;
+        }
+
+        @keyframes staticPulse {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .boot-text {
+            font-family: 'VT323', monospace;
+            font-size: 28px;
+            text-align: center;
+            line-height: 1.8;
+            opacity: 0;
+            animation: bootSequence 1s 1.6s forwards;
+        }
+
+        @keyframes bootSequence {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px;
+            position: relative;
+            z-index: 1;
         }
 
         /* VHS Overlay */
@@ -142,16 +229,30 @@
             z-index: 100;
         }
 
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 30px;
-            position: relative;
-            z-index: 1;
+        /* Static Transition Overlay */
+        .static-transition {
+            position: fixed;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='5' numOctaves='4' /%3E%3CfeColorMatrix type='saturate' values='0' /%3E%3C/filter%3E%3Crect width='400' height='400' fill='white' filter='url(%23noise)' /%3E%3C/svg%3E");
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .page-header {
+        .static-transition.active {
+            animation: staticFlash 0.28s ease;
+        }
+
+        @keyframes staticFlash {
+            0%   { opacity: 0; }
+            15%  { opacity: 0.85; }
+            45%  { opacity: 0.9; }
+            65%  { opacity: 0.3; }
+            100% { opacity: 0; }
+        }
+
+        /* Page Header */
+        .channel-header {
             font-family: 'VT323', monospace;
             font-size: 32px;
             margin-bottom: 10px;
@@ -160,7 +261,7 @@
             letter-spacing: 2px;
         }
 
-        .page-title {
+        .channel-title {
             font-family: 'VT323', monospace;
             font-size: 64px;
             margin-bottom: 40px;
@@ -205,10 +306,17 @@
         /* Editor Section */
         .editor-section {
             display: none;
+            animation: channelFadeIn 0.8s;
         }
 
         .editor-section.active {
             display: block;
+        }
+
+        @keyframes channelFadeIn {
+            0% { opacity: 0; transform: scale(0.98); }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         /* Story Editor */
@@ -280,6 +388,7 @@
         .node-card:hover {
             border-color: var(--white);
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .node-id {
@@ -553,6 +662,12 @@
             letter-spacing: 1px;
         }
 
+        .export-section p {
+            color: var(--light-gray);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
         .export-textarea {
             width: 100%;
             min-height: 200px;
@@ -614,7 +729,7 @@
                 padding: 40px 20px;
             }
 
-            .page-title {
+            .channel-title {
                 font-size: 48px;
             }
 
@@ -633,6 +748,10 @@
             .timestamp {
                 font-size: 12px;
             }
+
+            .view-toggle {
+                flex-wrap: wrap;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -647,6 +766,17 @@
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="vhs-play">▶ PLAY</div>
+        <div class="glitch-line"></div>
+        <div class="static-noise"></div>
+        <div class="boot-text">
+            INITIALIZING GAME STUDIO…<br>
+            SIGNAL FOUND
+        </div>
+    </div>
+
     <!-- CRT Screen Effects -->
     <div class="crt-screen">
         <div class="scanlines"></div>
@@ -664,10 +794,13 @@
     <!-- Timestamp -->
     <div class="timestamp" id="timestamp"></div>
 
+    <!-- Static Transition -->
+    <div class="static-transition" id="staticTransition"></div>
+
     <!-- Main Container -->
     <div class="container">
-        <div class="page-header">CYOA STUDIO — INTERACTIVE NARRATIVE</div>
-        <h1 class="page-title">GAME MAKER</h1>
+        <div class="channel-header">INTERACTIVE NARRATIVE</div>
+        <h1 class="channel-title">GAME MAKER</h1>
 
         <!-- View Toggle -->
         <div class="view-toggle">
@@ -679,7 +812,7 @@
         <!-- EDITOR VIEW -->
         <div class="editor-section active" id="editor-view">
             <div class="info-box">
-                <strong>HOW TO USE:</strong> Create a story by defining nodes. Each node has text and choices that lead to other nodes. Start with a node ID of "start" for your beginning. Mark end nodes with "END" to finish the story.
+                <strong>HOW TO USE:</strong> Create a story by defining nodes. Each node has text and choices that link to other nodes. Start with node ID "start" for your beginning. Mark end nodes with "END" to finish the story.
             </div>
 
             <!-- Game Settings -->
@@ -706,20 +839,20 @@
                     <div class="form-row">
                         <div class="editor-group">
                             <label class="editor-label">NODE ID</label>
-                            <input type="text" class="editor-input" id="newNodeId" placeholder="e.g., node_1" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                            <input type="text" class="editor-input" id="newNodeId" placeholder="e.g., node_1">
                         </div>
                         <div class="editor-group">
                             <label class="editor-label">NODE TEXT</label>
-                            <input type="text" class="editor-input" id="newNodeText" placeholder="What does the player see?" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                            <input type="text" class="editor-input" id="newNodeText" placeholder="What does the player see?">
                         </div>
                     </div>
                     <div class="editor-group">
                         <label class="editor-label">CHOICE TEXT (Optional)</label>
-                        <input type="text" class="editor-input" id="newChoiceText" placeholder="What can the player choose?" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                        <input type="text" class="editor-input" id="newChoiceText" placeholder="What can the player choose?">
                     </div>
                     <div class="editor-group">
                         <label class="editor-label">NEXT NODE ID (Optional)</label>
-                        <input type="text" class="editor-input" id="newNextNode" placeholder="Where does this choice lead?" -webkit-user-select="text" -moz-user-select="text" user-select="text">
+                        <input type="text" class="editor-input" id="newNextNode" placeholder="Where does this choice lead?">
                     </div>
                     <button class="btn-primary" id="addNodeBtn">+ ADD NODE</button>
                 </div>
@@ -740,7 +873,7 @@
         <div class="editor-section" id="export-view">
             <div class="export-section">
                 <h3>EXPORT STORY DATA</h3>
-                <p style="color: var(--light-gray); margin-bottom: 20px; font-size: 14px;">Copy this JSON data to save, share, or import your story.</p>
+                <p>Copy this JSON data to save, share, or import your story.</p>
                 <textarea class="export-textarea" id="exportData" readonly></textarea>
                 <div class="export-buttons">
                     <button class="btn-export" id="copyExportBtn">COPY JSON</button>
@@ -750,7 +883,7 @@
 
             <div class="export-section">
                 <h3>IMPORT STORY DATA</h3>
-                <p style="color: var(--light-gray); margin-bottom: 20px; font-size: 14px;">Paste previously exported JSON to restore a story.</p>
+                <p>Paste previously exported JSON to restore a story.</p>
                 <textarea class="export-textarea" id="importData" placeholder="Paste JSON here..."></textarea>
                 <button class="btn-primary" id="importBtn">IMPORT STORY</button>
             </div>
@@ -776,17 +909,20 @@
             // View toggle
             document.querySelectorAll('.toggle-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.editor-section').forEach(s => s.classList.remove('active'));
-                    e.target.classList.add('active');
-                    const view = e.target.dataset.view;
-                    document.getElementById(`${view}-view`).classList.add('active');
-                    
-                    if (view === 'export') {
-                        updateExportData();
-                    } else if (view === 'player') {
-                        loadGameForPlay();
-                    }
+                    triggerStaticTransition();
+                    setTimeout(() => {
+                        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.editor-section').forEach(s => s.classList.remove('active'));
+                        e.target.classList.add('active');
+                        const view = e.target.dataset.view;
+                        document.getElementById(`${view}-view`).classList.add('active');
+                        
+                        if (view === 'export') {
+                            updateExportData();
+                        } else if (view === 'player') {
+                            loadGameForPlay();
+                        }
+                    }, 140);
                 });
             });
 
@@ -816,6 +952,13 @@
 
             document.getElementById('downloadExportBtn').addEventListener('click', downloadJSON);
             document.getElementById('importBtn').addEventListener('click', importJSON);
+        }
+
+        function triggerStaticTransition() {
+            const staticDiv = document.getElementById('staticTransition');
+            staticDiv.classList.remove('active');
+            void staticDiv.offsetWidth; // Reflow
+            staticDiv.classList.add('active');
         }
 
         function createDefaultStartNode() {
@@ -1009,8 +1152,11 @@
                 alert(`Target node "${targetId}" does not exist!`);
                 return;
             }
-            state.currentNode = targetId;
-            renderGameNode();
+            triggerStaticTransition();
+            setTimeout(() => {
+                state.currentNode = targetId;
+                renderGameNode();
+            }, 140);
         }
 
         function updateExportData() {
